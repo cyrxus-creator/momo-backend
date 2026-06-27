@@ -52,7 +52,9 @@ app.post("/payer", async (req, res) => {
       },
     });
     res.json({ success: true, paymentId });
-  } catch (error) {
+  } catch (error) {} catch (error) {
+    console.error("ERREUR PAYER:", JSON.stringify(error.response?.data), error.message);
+    res.status(500).json({ success: false, message: "Erreur paiement"
     res.status(500).json({ success: false, message: "Erreur paiement", details: error.response?.data });
   }
 });
@@ -67,8 +69,7 @@ app.get("/statut/:paymentId", async (req, res) => {
         "Ocp-Apim-Subscription-Key": CONFIG.SUBSCRIPTION_KEY,
       },
     });
-    res.json({ success: true, statut: response.data.status, paye: response.data.status === "SUCCESSFUL" });
-  } catch (error) {console.error("ERREUR MTN:", JSON.stringify(error.response?.data));
+    res.json({
     res.status(500).json({ success: false, message: "Erreur statut" });
   }
 });
