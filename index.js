@@ -52,9 +52,9 @@ app.post("/payer", async (req, res) => {
       },
     });
     res.json({ success: true, paymentId });
-  } catch (error) {} catch (error) {
+  } catch (error) {
     console.error("ERREUR PAYER:", JSON.stringify(error.response?.data), error.message);
-    res.status(500).json({ success: false, message: "Erreur paiement"
+    
     res.status(500).json({ success: false, message: "Erreur paiement", details: error.response?.data });
   }
 });
