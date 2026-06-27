@@ -17,10 +17,10 @@ const CONFIG = {
 };
 
 async function getAccessToken() {
-  const credentials = Buffer.from(`${CONFIG.API_USER}:${CONFIG.API_KEY}`).toString("base64");
-  const response = await axios.post(`${CONFIG.BASE_URL}/collection/token/`, {}, {
+  const credentials = Buffer.from(CONFIG.API_USER + ":" + CONFIG.API_KEY).toString("base64");
+  const response = await axios.post(CONFIG.BASE_URL + "/collection/token/", {}, {
     headers: {
-      Authorization: `Basic ${credentials}`,
+      Authorization: "Basic " + credentials,
       "Ocp-Apim-Subscription-Key": CONFIG.SUBSCRIPTION_KEY,
     },
   });
@@ -28,14 +28,17 @@ async function getAccessToken() {
 }
 
 app.post("/payer", async (req, res) => {
-  const { montant, numero, reference, description } = req.body;
+  const montant = req.body.montant;
+  const numero = req.body.numero;
+  const reference = req.body.reference;
+  const description = req.body.description;
   if (!montant || !numero) {
-    return res.status(400).json({ success: false, message: "Montant et numéro requis" });
+    return res.status(400).json({ success: false, message: "Montant et numero requis" });
   }
   try {
     const token = await getAccessToken();
     const paymentId = uuidv4();
-    await axios.post(`${CONFIG.BASE_URL}/collection/v1_0/requesttopay`, {
+    await axios.post(CONFIG.BASE_URL + "/collection/v1_0/requesttopay", {
       amount: String(montant),
       currency: CONFIG.CURRENCY,
       externalId: reference || paymentId,
@@ -44,39 +47,41 @@ app.post("/payer", async (req, res) => {
       payeeNote: "Boutique Mario - Merci",
     }, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: "Bearer " + token,
         "X-Reference-Id": paymentId,
         "X-Target-Environment": CONFIG.ENVIRONMENT,
         "Ocp-Apim-Subscription-Key": CONFIG.SUBSCRIPTION_KEY,
         "Content-Type": "application/json",
       },
     });
-    res.json({ success: true, paymentId });
+    res.json({ success: true, paymentId: paymentId });
   } catch (error) {
-    console.error("ERREUR PAYER:", JSON.stringify(error.response?.data), error.message);
-    
-    res.status(500).json({ success: false, message: "Erreur paiement", details: error.response?.data });
+    console.error("ERREUR PAYER:", error.message);
+    res.status(500).json({ success: false, message: "Erreur paiement" });
   }
 });
 
 app.get("/statut/:paymentId", async (req, res) => {
   try {
     const token = await getAccessToken();
-    const response = await axios.get(`${CONFIG.BASE_URL}/collection/v1_0/requesttopay/${req.params.paymentId}`, {
+    const response = await axios.get(CONFIG.BASE_URL + "/collection/v1_0/requesttopay/" + req.params.paymentId, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: "Bearer " + token,
         "X-Target-Environment": CONFIG.ENVIRONMENT,
         "Ocp-Apim-Subscription-Key": CONFIG.SUBSCRIPTION_KEY,
       },
     });
-    res.json({
+    res.json({ success: true, statut: response.data.status, paye: response.data.status === "SUCCESSFUL" });
+  } catch (error) {
     res.status(500).json({ success: false, message: "Erreur statut" });
   }
 });
 
 app.get("/", (req, res) => {
-  res.json({ message: "✅ Backend MTN MoMo opérationnel" });
+  res.json({ message: "Backend MTN MoMo operationnel" });
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`✅ Serveur démarré sur le port ${PORT}`));
+app.listen(PORT, function() {
+  console.log("Serveur demarre sur le port " + PORT);
+});
