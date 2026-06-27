@@ -68,7 +68,7 @@ app.get("/statut/:paymentId", async (req, res) => {
       },
     });
     res.json({ success: true, statut: response.data.status, paye: response.data.status === "SUCCESSFUL" });
-  } catch (error) {
+  } catch (error) {console.error("ERREUR MTN:", JSON.stringify(error.response?.data));
     res.status(500).json({ success: false, message: "Erreur statut" });
   }
 });
