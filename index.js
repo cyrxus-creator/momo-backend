@@ -42,7 +42,7 @@ app.post("/payer", async (req, res) => {
       amount: String(montant),
       currency: CONFIG.CURRENCY,
       externalId: reference || paymentId,
-      payer: { partyIdType: "MSISDN", partyId: numero },
+      payer: { partyIdType: "MSISDN", partyId: "46733123450" },
       payerMessage: description || "Paiement commande",
       payeeNote: "Boutique Mario - Merci",
     }, {
