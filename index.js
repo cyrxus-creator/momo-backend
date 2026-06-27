@@ -9,8 +9,8 @@ app.use(cors());
 
 const CONFIG = {
   SUBSCRIPTION_KEY: "48927b94feb043819043a4c15a6df927",
-  API_USER: "f4b3c2d1-e5a6-4890-bcde-f1234567890a",
-  API_KEY: "c2a02a460d3845eaadbe531976f27b2b",
+  API_USER: "a1b2c3d4-e5f6-4789-abcd-ef1234567890",
+  API_KEY: "c80ce015a07b4fbbb0a81690b7904050",
   BASE_URL: "https://sandbox.momodeveloper.mtn.com",
   ENVIRONMENT: "sandbox",
   CURRENCY: "EUR",
